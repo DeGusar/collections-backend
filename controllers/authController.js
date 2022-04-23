@@ -1,18 +1,14 @@
+const User = require("../models/User");
+
 module.exports.login = function (req, res) {
   res.status(200).json({
     login: true,
   });
 };
 
-module.exports.register = function (req, res) {
-  res.status(200).json({
-    register: true,
-  });
-};
-module.exports.getUsers = function (req, res) {
-  res.status(200).json({
-    getUsers: true,
-  });
+module.exports.register = async function (req, res) {};
+module.exports.getUsers = async function (req, res) {
+  res.status(200).json({ role: userRole });
 };
 module.exports.deleteUsers = function (req, res) {
   res.status(200).json({
