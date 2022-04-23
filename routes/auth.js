@@ -3,6 +3,7 @@ const controller = require("../controllers/authController");
 const router = express.Router();
 const { check } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 router.post(
   "/login",
@@ -13,10 +14,20 @@ router.post(
   controller.login
 );
 router.post("/register", controller.register);
-router.get("/users", authMiddleware, controller.getUsers);
-router.delete("/delete", authMiddleware, controller.deleteUsers);
-router.patch("/block", authMiddleware, controller.blockUsers);
-router.patch("/unblock", authMiddleware, controller.unblockUsers);
-router.patch("/setadmin", authMiddleware, controller.setAdmin);
+router.get("/users", authMiddleware, roleMiddleware, controller.getUsers);
+router.delete(
+  "/delete",
+  authMiddleware,
+  roleMiddleware,
+  controller.deleteUsers
+);
+router.patch("/block", authMiddleware, roleMiddleware, controller.blockUsers);
+router.patch(
+  "/unblock",
+  authMiddleware,
+  roleMiddleware,
+  controller.unblockUsers
+);
+router.patch("/setadmin", authMiddleware, roleMiddleware, controller.setAdmin);
 
 module.exports = router;
