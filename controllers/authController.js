@@ -27,8 +27,9 @@ module.exports.login = async function (req, res) {
     }
     const validPassword = bcrypt.compareSync(password, user.password);
     if (!validPassword) {
-      return res.status(402).json({ message: "Wrong email or password" });
+      return res.status(401).json({ message: "Wrong email or password" });
     }
+    await User.findOneAndUpdate({ _id: user._id }, { lastVisit: Date.now() });
     const token = generateAccesToken(user._id, user.role, user.status);
     return res.json({
       token: `Bearer ${token}`,
@@ -48,7 +49,8 @@ module.exports.register = async function (req, res) {
     if (!errors.isEmpty()) {
       return res.status(422).json({ message: "Validation error", errors });
     }
-    const { password, firstName, lastName, email, role } = req.body;
+    const { password, firstName, lastName, email } = req.body;
+    console.log(req.body);
     const candidate = await User.findOne({
       email: new RegExp("^" + email + "$", "i"),
     });
@@ -63,12 +65,21 @@ module.exports.register = async function (req, res) {
         firstName,
         lastName,
         email,
-        role,
       });
       await user.save();
+      const token = generateAccesToken(user._id, user.role, user.status);
+      return res.status(200).json({
+        token: `Bearer ${token}`,
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      });
       return res.status(200).json({ message: "User registered" });
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
 };
 module.exports.getUsers = async function (req, res) {
   try {
@@ -80,8 +91,9 @@ module.exports.getUsers = async function (req, res) {
 };
 module.exports.deleteUsers = async function (req, res) {
   try {
-    const { body } = req.body;
-    await User.deleteMany({ _id: { $in: body } });
+    const { ids } = req.body;
+    console.log(req.body);
+    await User.deleteMany({ _id: { $in: ids } });
     return res.status(200).json({ message: "Users deleted" });
   } catch (e) {
     console.log(e);
@@ -89,10 +101,9 @@ module.exports.deleteUsers = async function (req, res) {
 };
 module.exports.blockUsers = async function (req, res) {
   try {
-    const { body } = req.body;
-    console.log(body);
+    const { ids } = req.body;
     await User.updateMany(
-      { _id: { $in: body } },
+      { _id: { $in: ids } },
       { $set: { status: "Blocked" } }
     );
     return res.json({ message: "Users blocked" });
@@ -102,10 +113,9 @@ module.exports.blockUsers = async function (req, res) {
 };
 module.exports.unblockUsers = async function (req, res) {
   try {
-    const { body } = req.body;
-    console.log(body);
+    const { ids } = req.body;
     await User.updateMany(
-      { _id: { $in: body } },
+      { _id: { $in: ids } },
       { $set: { status: "Active" } }
     );
     return res.json({ message: "Users unblocked" });
@@ -115,8 +125,9 @@ module.exports.unblockUsers = async function (req, res) {
 };
 module.exports.setAdmin = async function (req, res) {
   try {
-    const { body } = req.body;
-    await User.updateMany({ _id: { $in: body } }, { $set: { role: "admin" } });
+    const { ids } = req.body;
+    console.log(req.body);
+    await User.updateMany({ _id: { $in: ids } }, { $set: { role: "admin" } });
     return res.json({ message: "Users role changed to admin" });
   } catch (e) {
     console.log(e);

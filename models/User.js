@@ -7,6 +7,8 @@ const User = new Schema({
   lastName: { type: String },
   role: { type: String, default: "user" },
   status: { type: String, default: "Active" },
+  registration: { type: Date, default: Date.now() },
+  lastVisit: { type: Date, default: Date.now() },
 });
 
 module.exports = model("User", User);
