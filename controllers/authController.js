@@ -50,7 +50,6 @@ module.exports.register = async function (req, res) {
       return res.status(422).json({ message: "Validation error", errors });
     }
     const { password, firstName, lastName, email } = req.body;
-    console.log(req.body);
     const candidate = await User.findOne({
       email: new RegExp("^" + email + "$", "i"),
     });

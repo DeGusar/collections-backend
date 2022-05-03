@@ -16,6 +16,6 @@ module.exports = function (req, res, next) {
     next();
   } catch (e) {
     console.log(e);
-    return res.status(483).json({ message: "User not authorised" });
+    return res.status(483).json({ message: e.message });
   }
 };
