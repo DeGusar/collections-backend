@@ -6,6 +6,6 @@ router.get("/", controller.getAll);
 router.get("/:id", controller.getById);
 router.post("/create", controller.create);
 router.patch("/update", controller.update);
-router.delete("/delete", controller.delete);
+router.delete("/delete/:idCollection", controller.delete);
 
 module.exports = router;
