@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const collectionScheme = new Schema({
   nameCollection: { type: String, required: true },
   description: { type: String },
-  theme: { type: String },
+  theme: { type: String, default: "default" },
   imageSrc: { type: String, default: "" },
   createdAt: { type: Date, default: Date.now() },
   userId: { type: String, required: true },

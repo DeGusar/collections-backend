@@ -13,6 +13,16 @@ module.exports.getById = async function (req, res) {
     console.log(e.message);
   }
 };
+module.exports.getByIdCollection = async function (req, res) {
+  try {
+    const collection = await Collection.find({
+      _id: req.params.idCollection,
+    });
+    res.status(200).json(collection);
+  } catch (e) {
+    console.log("error");
+  }
+};
 module.exports.create = async (req, res) => {
   try {
     const { nameCollection, theme, description, imageSrc, userId, additional } =
@@ -30,7 +40,7 @@ module.exports.create = async (req, res) => {
         nameCollection,
         description,
         userId,
-        theme,
+        theme: !theme && "default",
         imageSrc,
         additional,
       });
@@ -43,7 +53,19 @@ module.exports.create = async (req, res) => {
   }
 };
 
-module.exports.update = async function (req, res) {};
+module.exports.update = async function (req, res) {
+  try {
+    const { nameCollection, description, theme, imageSrc, idCollection } =
+      req.body;
+    await Collection.updateOne(
+      { _id: idCollection },
+      { $set: { nameCollection, description, theme, imageSrc } }
+    );
+    res.status(200).json({ message: "Collection updated" });
+  } catch (error) {
+    console.log("error.mesage");
+  }
+};
 module.exports.delete = async function (req, res) {
   try {
     await Collection.deleteOne({
