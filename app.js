@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const collectionsRoutes = require("./routes/collections");
 const itemsRoutes = require("./routes/items");
 const imagesRoutes = require("./routes/images");
+const tagsRoutes = require("./routes/tags");
 const commentsRoutes = require("./routes/comments");
 
 const app = express();
@@ -27,6 +28,7 @@ app.use("/auth", authRoutes);
 app.use("/images", imagesRoutes);
 app.use("/collections", collectionsRoutes);
 app.use("/items", itemsRoutes);
+app.use("/tags", tagsRoutes);
 app.use("/comments", commentsRoutes);
 
 module.exports = app;
