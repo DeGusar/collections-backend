@@ -5,7 +5,7 @@ const collectionScheme = new Schema({
   description: { type: String },
   theme: { type: String, default: "default" },
   imageSrc: { type: String, default: "" },
-  createdAt: { type: Date, default: Date.now() },
+  createdAt: { type: Date, default: Date.now },
   userId: { type: String, required: true },
   additional: { type: Array, default: [] },
 });

@@ -1,23 +1,35 @@
 const { validationResult } = require("express-validator");
+const { findOne } = require("../models/Item");
 const Item = require("../models/Item");
 const Tag = require("../models/Tag");
 
 module.exports.getAll = async function (req, res) {};
-module.exports.getById = async function (req, res) {};
+module.exports.getByIdItem = async function (req, res) {
+  try {
+    const { idItem } = req.params;
+    const item = await Item.findOne({
+      _id: idItem,
+    });
+    console.log(item);
+    res.status(200).json(item);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
+module.exports.getByIdCollection = async function (req, res) {
+  try {
+    const { idCollection } = req.params;
+    const items = await Item.find({
+      idCollection: idCollection,
+    });
+    res.status(200).json(items);
+  } catch (e) {
+    console.log(e.message);
+  }
+};
 module.exports.create = async function (req, res) {
   try {
     const { nameItem, tags } = req.body;
-    tags.forEach(async (tag) => {
-      const possibleItem = await Tag.findOne({
-        value: new RegExp("^" + tag + "$", "i"),
-      });
-      if (!possibleItem) {
-        const tagModel = await new Tag({
-          value: tag.trim(),
-        });
-        await tagModel.save();
-      }
-    });
 
     const possibleItem = await Item.findOne({
       nameItem: new RegExp("^" + nameItem + "$", "i"),
@@ -30,11 +42,91 @@ module.exports.create = async function (req, res) {
       const item = await new Item(req.body);
       await item.save();
 
+      tags.forEach(async (tag) => {
+        const possibleTag = await Tag.findOne({
+          value: new RegExp("^" + tag.trim() + "$", "i"),
+        });
+        if (!possibleTag) {
+          const tagModel = await new Tag({
+            value: tag.trim(),
+            items: [item._id],
+          });
+          await tagModel.save();
+        } else {
+          await Tag.findOneAndUpdate(
+            { value: new RegExp("^" + tag.trim() + "$", "i") },
+            { $push: { items: item._id } }
+          );
+        }
+      });
+
       return res.status(200).json({ message: "Item created" });
     }
   } catch (e) {
     console.log("error");
   }
 };
-module.exports.update = async function (req, res) {};
-module.exports.delete = async function (req, res) {};
+module.exports.update = async function (req, res) {
+  try {
+    const { idItem } = req.params;
+    const { nameItem, additional, tags } = req.body;
+    const item = await Item.findOne({
+      _id: idItem,
+    });
+    await Item.updateOne(
+      { _id: idItem },
+      { $set: { nameItem, additional, tags } }
+    );
+    for (const tag of tags) {
+      const possibleTag = await Tag.findOne({
+        value: new RegExp("^" + tag.trim() + "$", "i"),
+      });
+      if (!possibleTag) {
+        const tagModel = await new Tag({
+          value: tag.trim(),
+          items: item._id,
+        });
+        await tagModel.save();
+      } else {
+        await Tag.findOneAndUpdate(
+          { value: new RegExp("^" + tag.trim() + "$", "i") },
+          { $addToSet: { items: item._id } }
+        );
+      }
+    }
+    res.status(200).json({ message: "Item updated" });
+  } catch (error) {
+    console.log(error.mesage);
+  }
+};
+module.exports.delete = async function (req, res) {
+  try {
+    const idItem = req.params.idItem;
+
+    const item = await Item.find({
+      _id: idItem,
+    });
+    item[0].tags.forEach(async (tagValue) => {
+      const tag = await Tag.findOne({
+        value: new RegExp("^" + tagValue + "$", "i"),
+      });
+      if (tag.items.length === 1) {
+        await Tag.deleteOne({
+          _id: tag._id,
+        });
+      } else {
+        await Tag.findOneAndUpdate(
+          { _id: tag._id },
+          { $pull: { items: item[0]._id } }
+        );
+      }
+    });
+    await Item.deleteOne({
+      _id: idItem,
+    });
+
+    res.status(200).json({ message: "Item successfull deleted" });
+  } catch (e) {
+    console.log("error");
+  }
+};

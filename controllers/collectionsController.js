@@ -1,6 +1,8 @@
 const { cloudinary } = require("../utils/cloudinary");
 const { validationResult } = require("express-validator");
 const Collection = require("../models/Collection");
+const Item = require("../models/Item");
+const Tag = require("../models/Tag");
 
 module.exports.getAll = function (req, res) {};
 module.exports.getById = async function (req, res) {
@@ -63,14 +65,39 @@ module.exports.update = async function (req, res) {
     );
     res.status(200).json({ message: "Collection updated" });
   } catch (error) {
-    console.log("error.mesage");
+    console.log(error.mesage);
   }
 };
 module.exports.delete = async function (req, res) {
+  const { idCollection } = req.params;
   try {
     await Collection.deleteOne({
-      _id: req.params.idCollection,
+      _id: idCollection,
     });
+    const items = await Item.find({
+      idCollection: idCollection,
+    });
+    for (const item of items) {
+      await item.tags.forEach(async (tagValue) => {
+        const tag = await Tag.findOne({
+          value: new RegExp("^" + tagValue + "$", "i"),
+        });
+        if (tag.items.length === 1) {
+          await Tag.deleteOne({
+            _id: tag._id,
+          });
+        } else {
+          await Tag.findOneAndUpdate(
+            { _id: tag._id },
+            { $pull: { items: item._id } }
+          );
+        }
+      });
+      await Item.deleteOne({
+        idCollection: idCollection,
+      });
+    }
+
     res.status(200).json({ message: "Collection deleted" });
   } catch (e) {
     console.log(e.message);
