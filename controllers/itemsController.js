@@ -10,7 +10,6 @@ module.exports.getByIdItem = async function (req, res) {
     const item = await Item.findOne({
       _id: idItem,
     });
-    console.log(item);
     res.status(200).json(item);
   } catch (e) {
     console.log(e.message);
@@ -69,14 +68,11 @@ module.exports.create = async function (req, res) {
 module.exports.update = async function (req, res) {
   try {
     const { idItem } = req.params;
-    const { nameItem, additional, tags } = req.body;
+    const { tags } = req.body;
     const item = await Item.findOne({
       _id: idItem,
     });
-    await Item.updateOne(
-      { _id: idItem },
-      { $set: { nameItem, additional, tags } }
-    );
+    await Item.updateOne({ _id: idItem }, { $set: { ...req.body } });
     for (const tag of tags) {
       const possibleTag = await Tag.findOne({
         value: new RegExp("^" + tag.trim() + "$", "i"),
@@ -128,5 +124,29 @@ module.exports.delete = async function (req, res) {
     res.status(200).json({ message: "Item successfull deleted" });
   } catch (e) {
     console.log("error");
+  }
+};
+module.exports.setLike = async function (req, res) {
+  try {
+    const { idItem } = req.params;
+    const { userId } = req.body;
+    console.log(userId);
+    const item = await Item.findOne({ _id: idItem });
+    if (item.likes.includes(userId)) {
+      console.log("raz");
+      await Item.findOneAndUpdate(
+        { _id: idItem },
+        { $pull: { likes: userId } }
+      );
+    } else {
+      console.log(item);
+      await Item.findOneAndUpdate(
+        { _id: idItem },
+        { $push: { likes: userId } }
+      );
+    }
+    res.status(200).json({ message: "Likes updated" });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
   }
 };
