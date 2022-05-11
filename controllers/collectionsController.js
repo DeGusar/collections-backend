@@ -4,7 +4,16 @@ const Collection = require("../models/Collection");
 const Item = require("../models/Item");
 const Tag = require("../models/Tag");
 
-module.exports.getAll = function (req, res) {};
+module.exports.getAll = async function (req, res) {
+  try {
+    const collections = await Collection.find()
+      .sort({ createdAt: -1 })
+      .limit(12);
+    res.status(200).json({ collections });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
 module.exports.getById = async function (req, res) {
   try {
     const collections = await Collection.find({
@@ -27,8 +36,15 @@ module.exports.getByIdCollection = async function (req, res) {
 };
 module.exports.create = async (req, res) => {
   try {
-    const { nameCollection, theme, description, imageSrc, userId, additional } =
-      req.body;
+    const {
+      nameCollection,
+      theme,
+      description,
+      imageSrc,
+      userId,
+      additional,
+      author,
+    } = req.body;
     const possibleCollection = await Collection.findOne({
       nameCollection: new RegExp("^" + nameCollection + "$", "i"),
       userId: new RegExp("^" + userId + "$", "i"),
@@ -45,6 +61,7 @@ module.exports.create = async (req, res) => {
         theme: !theme && "default",
         imageSrc,
         additional,
+        author,
       });
       await collection.save();
 

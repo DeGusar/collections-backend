@@ -130,16 +130,14 @@ module.exports.setLike = async function (req, res) {
   try {
     const { idItem } = req.params;
     const { userId } = req.body;
-    console.log(userId);
+
     const item = await Item.findOne({ _id: idItem });
     if (item.likes.includes(userId)) {
-      console.log("raz");
       await Item.findOneAndUpdate(
         { _id: idItem },
         { $pull: { likes: userId } }
       );
     } else {
-      console.log(item);
       await Item.findOneAndUpdate(
         { _id: idItem },
         { $push: { likes: userId } }
