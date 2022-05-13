@@ -9,6 +9,7 @@ const itemsRoutes = require("./routes/items");
 const imagesRoutes = require("./routes/images");
 const tagsRoutes = require("./routes/tags");
 const commentsRoutes = require("./routes/comments");
+const searchRoutes = require("./routes/search");
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use("/collections", collectionsRoutes);
 app.use("/items", itemsRoutes);
 app.use("/tags", tagsRoutes);
 app.use("/comments", commentsRoutes);
+app.use("/search", searchRoutes);
 
 module.exports = app;

@@ -11,4 +11,10 @@ const itemScheme = new Schema({
   comments: { type: Array, default: [] },
 });
 
+itemScheme.index({
+  nameItem: "text",
+  additional: "text",
+  comments: "text",
+});
+
 module.exports = model("items", itemScheme);

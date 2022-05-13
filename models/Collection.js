@@ -11,4 +11,10 @@ const collectionScheme = new Schema({
   additional: { type: Array, default: [] },
 });
 
+collectionScheme.index({
+  nameCollection: "text",
+  author: "text",
+  description: "text",
+});
+
 module.exports = model("collections", collectionScheme);

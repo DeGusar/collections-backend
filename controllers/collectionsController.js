@@ -3,13 +3,24 @@ const { validationResult } = require("express-validator");
 const Collection = require("../models/Collection");
 const Item = require("../models/Item");
 const Tag = require("../models/Tag");
+const { updateMany } = require("../models/Collection");
 
 module.exports.getAll = async function (req, res) {
   try {
-    const collections = await Collection.find()
+    const collectionsNew = await Collection.find()
       .sort({ createdAt: -1 })
       .limit(12);
-    res.status(200).json({ collections });
+    const collectionBig = [];
+    for (const collection of collectionsNew) {
+      const items = await Item.find({
+        idCollection: collection._id.toString(),
+      });
+      collectionBig.push({ ...collection._doc, items: items.length });
+    }
+    const collectionsBiggest = collectionBig
+      .sort((a, b) => b.items - a.items)
+      .splice(0, 12);
+    res.status(200).json({ collectionsNew, collectionsBiggest });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
