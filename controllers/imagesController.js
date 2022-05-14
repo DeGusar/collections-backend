@@ -11,6 +11,6 @@ module.exports.upload = async function (req, res) {
     );
     res.status(200).json({ srcImage: uploadResponse.url });
   } catch (err) {
-    res.status(500).json({ err: "Something went wrong" });
+    res.status(400).json({ message: e.message });
   }
 };

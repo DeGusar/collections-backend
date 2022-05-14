@@ -44,6 +44,6 @@ module.exports.getByItemId = async (req, res) => {
     console.log(item[0].tags);
     res.status(200).json(item[0].tags);
   } catch (e) {
-    console.log(e.message);
+    res.status(400).json({ message: e.message });
   }
 };

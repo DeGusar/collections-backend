@@ -32,7 +32,7 @@ module.exports.getById = async function (req, res) {
     });
     res.status(200).json(collections);
   } catch (e) {
-    console.log(e.message);
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.getByIdCollection = async function (req, res) {
@@ -42,7 +42,7 @@ module.exports.getByIdCollection = async function (req, res) {
     });
     res.status(200).json(collection);
   } catch (e) {
-    console.log("error");
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.create = async (req, res) => {
@@ -93,7 +93,7 @@ module.exports.update = async function (req, res) {
     );
     res.status(200).json({ message: "Collection updated" });
   } catch (error) {
-    console.log(error.mesage);
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.delete = async function (req, res) {
@@ -128,6 +128,6 @@ module.exports.delete = async function (req, res) {
 
     res.status(200).json({ message: "Collection deleted" });
   } catch (e) {
-    console.log(e.message);
+    res.status(400).json({ message: e.message });
   }
 };

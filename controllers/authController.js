@@ -95,7 +95,7 @@ module.exports.deleteUsers = async function (req, res) {
     await User.deleteMany({ _id: { $in: ids } });
     return res.status(200).json({ message: "Users deleted" });
   } catch (e) {
-    console.log(e);
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.blockUsers = async function (req, res) {
@@ -107,7 +107,7 @@ module.exports.blockUsers = async function (req, res) {
     );
     return res.json({ message: "Users blocked" });
   } catch (e) {
-    console.log(e);
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.unblockUsers = async function (req, res) {
@@ -119,7 +119,7 @@ module.exports.unblockUsers = async function (req, res) {
     );
     return res.json({ message: "Users unblocked" });
   } catch (e) {
-    console.log(e);
+    res.status(400).json({ message: e.message });
   }
 };
 module.exports.setAdmin = async function (req, res) {
@@ -129,6 +129,6 @@ module.exports.setAdmin = async function (req, res) {
     await User.updateMany({ _id: { $in: ids } }, { $set: { role: "admin" } });
     return res.json({ message: "Users role changed to admin" });
   } catch (e) {
-    console.log(e);
+    res.status(400).json({ message: e.message });
   }
 };

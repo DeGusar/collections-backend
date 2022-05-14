@@ -12,7 +12,7 @@ module.exports.getByIdItem = async function (req, res) {
     });
     res.status(200).json(item);
   } catch (e) {
-    console.log(e.message);
+    res.status(400).json({message: e.message});
   }
 };
 module.exports.getByIdCollection = async function (req, res) {
@@ -23,7 +23,7 @@ module.exports.getByIdCollection = async function (req, res) {
     });
     res.status(200).json(items);
   } catch (e) {
-    console.log(e.message);
+    res.status(400).json({message: e.message});
   }
 };
 module.exports.create = async function (req, res) {
@@ -62,7 +62,7 @@ module.exports.create = async function (req, res) {
       return res.status(200).json({ message: "Item created" });
     }
   } catch (e) {
-    console.log("error");
+    res.status(400).json({message: e.message});
   }
 };
 module.exports.update = async function (req, res) {
@@ -91,8 +91,8 @@ module.exports.update = async function (req, res) {
       }
     }
     res.status(200).json({ message: "Item updated" });
-  } catch (error) {
-    console.log(error.mesage);
+  } catch (e) {
+    res.status(400).json({message: e.message});
   }
 };
 module.exports.delete = async function (req, res) {
@@ -123,7 +123,7 @@ module.exports.delete = async function (req, res) {
 
     res.status(200).json({ message: "Item successfull deleted" });
   } catch (e) {
-    console.log("error");
+    res.status(400).json({message: e.message});
   }
 };
 module.exports.setLike = async function (req, res) {
